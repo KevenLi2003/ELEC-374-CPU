@@ -7,9 +7,9 @@ module mar (
 );
     always @(posedge clock or posedge reset) begin
         if (reset)
-            MARvalue <= 32'b0
+            MARvalue <= 32'b0;
         else if (MARin)
-            MARvalue <= bus_data;
+            MARvalue <= busdata;
     end
     
 endmodule

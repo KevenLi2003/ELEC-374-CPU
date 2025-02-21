@@ -1,8 +1,9 @@
-module neg32 (
-    input wire [31:0] RA,
-    input wire enable,
-    output wire [31:0] RZ
+module not32 (
+    input wire [31:0] RA,     // Input operand
+    input wire enable,        // Enable signal
+    output wire [31:0] Zlow   // Lower 32 bits output for NOT result
 );
-    assign RZ = enable ? ~RA : 32'b0;
+    // Perform bitwise NOT operation and pass the result to Zlow
+    assign Zlow = enable ? ~RA : 32'b0;
 
 endmodule

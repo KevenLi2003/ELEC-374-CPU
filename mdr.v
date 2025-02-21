@@ -11,13 +11,13 @@ module mdr (
 );
     always @(posedge clock or posedge reset) begin
         if (reset)
-            MDRvalue <= 32'b0
+            MDRvalue <= 32'b0;
         else if (memory_read)
             MDRvalue <= memdata;
         else if (MDRin)
-            MDRvalue <= bus_data;
+            MDRvalue <= busdata;
     end
 
-    assign MDRvalue = (MDRout) ? MDRvalue : 32'bz;
+    assign busout = (MDRout) ? MDRvalue : 32'bz;
     
 endmodule

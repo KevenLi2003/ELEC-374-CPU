@@ -2,11 +2,14 @@ module adder32 (
     input wire [31:0] RA,
     input wire [31:0] RB,
     output wire [31:0] sum,
-    input wire enable; // for ALU, only perform addition when enabled
-    input c_in,
+    output wire [31:0] Zlow,  
+    input wire enable,  
+    input wire c_in,
     output wire c_out
 );
     wire c_out_internal;
+
+    // Lower 16-bit adder
     adder16 lower (
         .RA(RA[15:0]),
         .RB(RB[15:0]),
@@ -15,29 +18,34 @@ module adder32 (
         .sum(sum[15:0]), 
         .c_out(c_out_internal)
     );
+
+    // Upper 16-bit adder
     adder16 upper (
-        .RA(RA[31:16],
+        .RA(RA[31:16]), 
         .RB(RB[31:16]),
         .c_in(c_out_internal),
-        .enable(enable)
+        .enable(enable),
         .sum(sum[31:16]),
-        .c_out(c_out))
+        .c_out(c_out)
     );
 
-    assign sum = enable ? sum : 32'b0;
+    assign Zlow = sum;
 
 endmodule
 
+
+// 16-bit Adder Module
 module adder16 (
     input wire [15:0] RA,
     input wire [15:0] RB,
     output wire [15:0] sum,
-    input wire enable, // for ALU, only perform addition when enabled
-    input c_in,
-    output c_out
+    input wire enable,  
+    input wire c_in,
+    output wire c_out
 );
     wire c_out1, c_out2, c_out3;
 
+    // 4-bit Adders
     adder4 adder1_4 (
         .RA(RA[3:0]), 
         .RB(RB[3:0]), 
@@ -45,8 +53,8 @@ module adder16 (
         .enable(enable),
         .sum(sum[3:0]), 
         .c_out(c_out1)
-    )
-    ;
+    );
+
     adder4 adder5_8 (
         .RA(RA[7:4]),
         .RB(RB[7:4]), 
@@ -74,35 +82,35 @@ module adder16 (
         .c_out(c_out)
     );
 
-    assign sum = enable ? sum : 16'b0;
-
 endmodule
 
+
+// 4-bit Adder Module
 module adder4 (
-    input wire [3:0] RA, // addend
-    input wire [3:0] RB, // addend
-    output wire [3:0] sum, // sum
-    input wire enable, // for ALU, only perform addition when enabled
-    input c_in, // carry in
-    output wire c_out // carry out
+    input wire [3:0] RA,  // Addend
+    input wire [3:0] RB,  // Addend
+    output wire [3:0] sum,  // Sum
+    input wire enable,  // Perform addition only when enabled
+    input wire c_in,  // Carry-in
+    output wire c_out  // Carry-out
 );
-    // generation, propogation, carry signals
+    // Generate and propagate signals
     wire [3:0] g;
     wire [3:0] p;
-    wire [3:0] c; // three bits carry-in's and a carry-out
+    wire [3:0] c;  // Internal carry bits
 
-    // calculate propogation and generate functions
+    // Calculate propagation and generation
     assign g = RA & RB;
     assign p = RA | RB;
 
-    // carries calculation
+    // Carry calculation
     assign c[0] = c_in;
-    assign c[1] = g[0] | p[0] & c[0];
-    assign c[2] = g[1] | p[1] & c[1];
-    assign c[3] = g[2] | p[2] & c[2];
-    assign c_out = g[3] | p[3] & c[3];
+    assign c[1] = g[0] | (p[0] & c[0]);
+    assign c[2] = g[1] | (p[1] & c[1]);
+    assign c[3] = g[2] | (p[2] & c[2]);
+    assign c_out = g[3] | (p[3] & c[3]);
 
-    // sum calculations
-    assign sum = RA ^ RB ^ c;
-    assign sum = enable ? sum : 4'b0;
+    // Sum calculation with enable condition
+    assign sum = enable ? (RA ^ RB ^ c) : 4'b0; 
+
 endmodule

@@ -1,9 +1,9 @@
-module shra32 (
+module rol32 (
     input wire [31:0] RA,
-    input wire bits,
+    input wire [4:0] bits,
     input wire enable,
-    output wire [31:0] RZ
+    output wire [31:0] Zlow
 );
-    assign RZ = enable ? ((RA << rotate_amount) | (RA >> (32 - rotate_amount))) : 32'b0;
+    assign Zlow = enable ? ((RA << bits) | (RA >> (32 - bits))) : 32'b0;
 
 endmodule

@@ -11,12 +11,12 @@ module pc (
     always @(posedge clock or posedge reset) begin
         if (reset) 
             PC <= 32'b0;
-        else if (PC_in) 
+        else if (PCin) 
             PC <= bus_data;
         else if (increment) 
             PC <= PC + 1;
     end
 
-    assign bus = (PC_out) ? PC : 32'bz;
+    assign bus = (PCout) ? PC : 32'bz;
     
 endmodule
