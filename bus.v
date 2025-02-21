@@ -4,6 +4,7 @@ module bus (
     input wire R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out, R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out,
     input wire HIout, LOout, PCout, IRout, MDRout, Zhighout, Zlowout,
     output wire [31:0] bus_out
+
 );
     reg [31:0] data;
     always @(*) begin
